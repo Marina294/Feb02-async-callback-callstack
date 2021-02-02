@@ -10,24 +10,19 @@ const form = document.querySelector('#form');
 const search = document.querySelector('#search');
 
 // Get initial movies
-getMovies(API_URL);
+getMovies(API_URL)
 
 //Create an async function of getMovies 
 //------assign a response to a fetch/axios method
 //------call showMovies function and pass the response as argument
-
-
-async function getMovies() {
-
-    const response = await axios.get('https://www.themoviedb.org/');
-      showMovies(response.data.results);
-    // console.log(response);
-    // return response.data
-    //  <---- you can return but you're not really meant to store the response, 
-    //  you have to call the showMovies() function and pass the result as an argument in this line.
-    
+async function getMovies(url){
+    const response = await fetch(url)
+    const { results } = await response.json();
+    console.log(results);
+    showMovies(results);
 
 }
+
 
 
 function showMovies(movies) {
@@ -36,31 +31,19 @@ function showMovies(movies) {
     movies.forEach((movie) => {
         //destructure the movie object
         // const { ???, ??? ,vote_average } = movie //include the "vote_average"
-
-        const { image, title, overview, vote_average } = movie;
-        // const { movie, overview ,vote_average } = movie
-        // <---- what you should destructure is the contents of "movie" object, 
-        // movieEl is supposed to be the name of the new div
-
-
+        const {poster_path, original_title, overview, vote_average} = movie;
 
         //create a div element
+        //add a "movie" class in that div 
         const movieEl = document.createElement('div');
-        // <----- this should be movieEl, the name movie is already taken 
-        // by the parameter of the callback function of forEach
-
-
-
-        //add a "movie" class in that div
-        movieEl.classList.add('movie');  
-        // div.push(movie);
-        // <------ this should be movieEl.classList.add(???) 
+        movieEl.classList.add('movie');
+        // movieEl.setAttribute('class', 'movie');
 
         //manipulate the newly created element's innerHTML (I called it movieEl in this sample)
         movieEl.innerHTML = `
-            <img src='${IMG_PATH + movie.image}' alt="movie image">
+            <img src="${IMG_PATH + movie.poster_path}" alt="movie image">
             <div class="movie-info">
-          <h3>${movie.title}</h3>
+          <h3>${movie.original_title}</h3>
           <span class="${getClassByRate(movie.vote_average)}">${movie.vote_average}</span>
             </div>
             <div class="overview">
@@ -70,7 +53,7 @@ function showMovies(movies) {
         `
         //append the movieEl to main
         main.appendChild(movieEl);
-    })
+    });
 }
 
 function getClassByRate(vote) {
@@ -86,19 +69,17 @@ function getClassByRate(vote) {
 form.addEventListener('submit', (e) => {
     //prevent refresh
     e.preventDefault();
-   //const searchTerm = ???  //assign the value of the input's value
-       const searchTerm = search.value;
 
-    // const searchTerm = document.getElementById('search');
-    // <----- you already have a search node (line 10), 
-    // use that to assign the search's input value onto searchTerm
+    //const searchTerm = ???  //assign the value of the input's value
+    const searchTerm = search.value;
 
     if(searchTerm && searchTerm !== '') {
         //call the getMovies function and pass the concatenated value of SEARCH_API + searchTerm
-        getMovies(SEARCH_API + searchTerm);
+        getMovies(SEARCH_API + searchTerm)
+
         //reset the input's value
-        searchTerm = '';
+        searchTerm = "";
     } else {
         window.location.reload()
     }
-});
+})
