@@ -20,8 +20,12 @@ getMovies(API_URL);
 async function getMovies() {
 
     const response = await axios.get('https://www.themoviedb.org/');
-    console.log(response);
-    return response.data
+      showMovies(response.data.results);
+    // console.log(response);
+    // return response.data
+    //  <---- you can return but you're not really meant to store the response, 
+    //  you have to call the showMovies() function and pass the result as an argument in this line.
+    
 
 }
 
@@ -32,17 +36,29 @@ function showMovies(movies) {
     movies.forEach((movie) => {
         //destructure the movie object
         // const { ???, ??? ,vote_average } = movie //include the "vote_average"
-        const { movieEl, overview ,vote_average } = movie
+
+        const { image, overview, vote_average } = movie
+        // const { movie, overview ,vote_average } = movie
+        // <---- what you should destructure is the contents of "movie" object, 
+        // movieEl is supposed to be the name of the new div
+
+
 
         //create a div element
-        const movie = document.createElement('div');
+        const movieEl = document.createElement('div');
+        // <----- this should be movieEl, the name movie is already taken 
+        // by the parameter of the callback function of forEach
 
-        //add a "movie" class in that div 
-        div.push(movie);
+
+
+        //add a "movie" class in that div
+        movieEl.classList.add('movie');  
+        // div.push(movie);
+        // <------ this should be movieEl.classList.add(???) 
 
         //manipulate the newly created element's innerHTML (I called it movieEl in this sample)
         movieEl.innerHTML = `
-            <img src="" alt="">
+            <img src='${IMG_PATH + image}' alt="">
             <div class="movie-info">
           <h3></h3>
           <span class="${getClassByRate(vote_average)}">${vote_average}</span>
@@ -71,7 +87,12 @@ form.addEventListener('submit', (e) => {
     //prevent refresh
     e.preventDefault();
    //const searchTerm = ???  //assign the value of the input's value
-    const searchTerm = document.getElementById('search');
+       const searchTerm = search.value;
+
+    // const searchTerm = document.getElementById('search');
+    // <----- you already have a search node (line 10), 
+    // use that to assign the search's input value onto searchTerm
+
     if(searchTerm && searchTerm !== '') {
         //call the getMovies function and pass the concatenated value of SEARCH_API + searchTerm
         getMovies(SEARCH_API + searchTerm);
